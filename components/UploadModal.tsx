@@ -36,7 +36,7 @@ const UploadModal: React.FC<UploadModalProps> = ({ onCancel, onImport, parser, t
                 const workbook = (window as any).XLSX.read(data, { type: 'array' });
                 const firstSheetName = workbook.SheetNames[0];
                 const worksheet = workbook.Sheets[firstSheetName];
-                const jsonData = (window as any).XLSX.utils.sheet_to_json(worksheet, { defval: null });
+                const jsonData = (window as any).XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: true });
                 
                 const result = parser(jsonData);
                 if (result.error) setError(result.error);
