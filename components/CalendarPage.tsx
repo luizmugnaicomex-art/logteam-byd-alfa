@@ -27,55 +27,68 @@ const DayDetailModal: React.FC<{ day: { date: Date, entries: LogisticsEntry[] },
     const groupedData = useMemo(() => groupEntriesByBL(day.entries), [day.entries]);
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fade-in" onClick={onClose}>
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-7xl h-[90vh] flex flex-col animate-scale-in" onClick={e => e.stopPropagation()}>
-                <div className="p-4 border-b flex justify-between items-center bg-gray-50">
-                    <h3 className="text-xl font-semibold text-gray-800 uppercase tracking-tight">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in p-4" onClick={onClose}>
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-7xl h-[90vh] flex flex-col animate-scale-in overflow-hidden" onClick={e => e.stopPropagation()}>
+                <div className="p-6 border-b flex justify-between items-center bg-gray-50/80 backdrop-blur">
+                    <h3 className="text-2xl font-bold text-gray-900 tracking-tight capitalize">
                         {day.date.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric', timeZone: 'UTC' })}
                     </h3>
-                    <button onClick={onClose} className="text-gray-400 hover:text-gray-600"><CloseIcon /></button>
+                    <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-200 text-gray-500 hover:text-gray-900 transition-colors"><CloseIcon /></button>
                 </div>
-                <div className="flex-grow p-4 overflow-auto">
+                <div className="flex-grow p-6 overflow-auto bg-gray-50/30">
                     {groupedData.length > 0 ? (
-                        <table className="w-full text-xs border-collapse border border-gray-400">
-                            <thead>
-                                <tr className="bg-[#f8cbad] text-black">
-                                    <th className="p-2 border border-gray-400">HBL</th>
-                                    <th className="p-2 border border-gray-400">LOT</th>
-                                    <th className="p-2 border border-gray-400">B.WARE.</th>
-                                    <th className="p-2 border border-gray-400">VESSEL</th>
-                                    <th className="p-2 border border-gray-400">FT</th>
-                                    <th className="p-2 border border-gray-400 text-center">QTY</th>
-                                    <th className="p-2 border border-gray-400">RELEASE</th>
-                                    <th className="p-2 border border-gray-400">TRUCK</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {groupedData.map((group, idx) => (
-                                    <tr key={idx} className={`hover:bg-gray-50 ${group.isGroupDelivered ? 'bg-green-50' : ''}`}>
-                                        <td className="p-2 border border-gray-300 font-bold">{group.bl}</td>
-                                        <td className="p-2 border border-gray-300">{group.batch}</td>
-                                        <td className="p-2 border border-gray-300">{group.bondedWarehouse}</td>
-                                        <td className="p-2 border border-gray-300">{group.arrivalVessel}</td>
-                                        <td className="p-2 border border-gray-300 text-center">
-                                            {group.deadlineReturnCntr 
-                                                ? new Date(group.deadlineReturnCntr + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }).replace('.', '') 
-                                                : ''}
-                                        </td>
-                                        <td className="p-2 border border-gray-300 text-center font-bold text-byd-blue">{group.summedQty}</td>
-                                        <td className="p-2 border border-gray-300 text-center">{group.dsa || 'NO'}</td>
-                                        <td className="p-2 border border-gray-300">{group.carrier}</td>
+                        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+                            <table className="w-full text-sm text-left">
+                                <thead>
+                                    <tr className="bg-gray-50 border-b border-gray-100 text-gray-600 font-medium uppercase text-xs tracking-wider">
+                                        <th className="p-4">HBL</th>
+                                        <th className="p-4">LOT</th>
+                                        <th className="p-4">B.Warehouse</th>
+                                        <th className="p-4">Vessel</th>
+                                        <th className="p-4">FT</th>
+                                        <th className="p-4 text-center">QTY</th>
+                                        <th className="p-4">Release</th>
+                                        <th className="p-4">Truck</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody className="divide-y divide-gray-100">
+                                    {groupedData.map((group, idx) => (
+                                        <tr key={idx} className={`hover:bg-gray-50 transition-colors ${group.isGroupDelivered ? 'bg-green-50/50' : ''}`}>
+                                            <td className="p-4 font-semibold text-gray-900">{group.bl}</td>
+                                            <td className="p-4 text-gray-600">{group.batch}</td>
+                                            <td className="p-4 text-gray-600">{group.bondedWarehouse}</td>
+                                            <td className="p-4 text-gray-600">{group.arrivalVessel}</td>
+                                            <td className="p-4 text-gray-600">
+                                                {group.deadlineReturnCntr 
+                                                    ? new Date(group.deadlineReturnCntr + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })
+                                                    : ''}
+                                            </td>
+                                            <td className="p-4 text-center font-black text-byd-blue text-base">{group.summedQty}</td>
+                                            <td className="p-4 text-gray-600">
+                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${group.dsa ? 'bg-blue-50 text-byd-blue' : 'bg-gray-100 text-gray-500'}`}>
+                                                    {group.dsa || 'NO'}
+                                                </span>
+                                            </td>
+                                            <td className="p-4 font-medium text-gray-700">{group.carrier}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     ) : ( 
-                        <div className="flex items-center justify-center h-full text-gray-500 font-medium italic">Nenhuma entrega agendada.</div> 
+                        <div className="flex flex-col items-center justify-center h-full text-gray-400 space-y-4">
+                            <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center">
+                                <span className="text-2xl">📅</span>
+                            </div>
+                            <span className="font-medium text-lg">Nenhuma entrega agendada</span>
+                        </div> 
                     )}
                 </div>
-                <div className="bg-gray-100 p-4 flex justify-end font-bold text-2xl border-t border-gray-300">
-                    {/* Fix: Explicitly cast operands to number for arithmetic operations to avoid TS errors. */}
-                    TOTAL CONTAINERS: {day.entries.reduce((sum, entry) => Number(sum) + (Number(entry.quantity) || 1), 0)}
+                <div className="bg-white p-6 flex justify-end items-center gap-4 border-t border-gray-100">
+                    <span className="text-gray-500 font-medium uppercase tracking-wider text-sm">Total Containers</span>
+                    <span className="font-black text-4xl text-gray-900 bg-gray-50 px-6 py-2 rounded-xl">
+                        {day.entries.reduce((sum, entry) => Number(sum) + (Number(entry.quantity) || 1), 0)}
+                    </span>
                 </div>
             </div>
         </div>
@@ -120,172 +133,183 @@ const CalendarPage: React.FC<CalendarPageProps> = ({ entries, isLoading, onMonth
     }, [currentDate, entries]);
 
     const WeeklySummary: React.FC<{ week: { entries: LogisticsEntry[] }[], onClick: () => void, isClickable: boolean }> = ({ week, onClick, isClickable }) => {
-        // Fix: Explicitly cast operands to number for arithmetic operations to avoid TS errors.
         const weeklyTotal = week.flatMap(d => d.entries).reduce((sum, e) => Number(sum) + (Number(e.quantity) || 1), 0);
         
-        // Row of daily totals just above the yellow block
-        const dailyTotalsRow = (
-            <div className="grid grid-cols-7 border-t border-black bg-white">
-                {week.map((day, idx) => {
-                    // Fix: Explicitly cast operands to number for arithmetic operations to avoid TS errors.
-                    const dailyTotal = day.entries.reduce((sum, e) => Number(sum) + (Number(e.quantity) || 1), 0);
-                    return (
-                        <div key={idx} className="flex justify-between p-1 text-[10px] font-bold border-r border-gray-300">
-                            <span>TOTAL</span>
-                            <span>{dailyTotal}</span>
-                        </div>
-                    );
-                })}
-            </div>
-        );
-
-        if (weeklyTotal === 0) return isClickable ? null : <div className="mt-2">{dailyTotalsRow}</div>;
+        if (weeklyTotal === 0) return isClickable ? null : <div className="h-6"></div>;
         
         const carrierCounts = week.flatMap(d => d.entries).reduce((acc: Record<string, number>, e: LogisticsEntry) => {
             const carrierKey = e.carrier || 'N/A';
-            // Fix: Explicitly cast operands to number for arithmetic operations to avoid TS errors.
             acc[carrierKey] = (Number(acc[carrierKey]) || 0) + (Number(e.quantity) || 1);
             return acc;
         }, {});
 
         return (
-            <div className="mt-1">
-                {dailyTotalsRow}
+            <div 
+                onClick={isClickable ? onClick : undefined}
+                className={`mt-4 grid grid-cols-1 md:grid-cols-12 gap-y-4 md:gap-4 bg-white border border-gray-200 rounded-2xl shadow-sm p-5 transition-all ${isClickable ? 'cursor-pointer hover:shadow-md hover:border-gray-300' : ''}`}
+            >
+                {/* Left: Summary */}
+                <div className="md:col-span-3 flex flex-col items-center justify-center md:border-r border-gray-100 pr-0 md:pr-4">
+                    <span className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Total da Semana</span>
+                    <span className="text-5xl font-black text-byd-blue">{weeklyTotal}</span>
+                </div>
                 
-                <div 
-                    onClick={isClickable ? onClick : undefined} 
-                    className={`mt-1 border-2 border-black bg-[#ffff00] flex text-sm overflow-hidden min-h-[140px] ${isClickable ? 'cursor-pointer hover:bg-[#ffff88]' : ''}`}
-                >
-                    {/* Left: TOTAL SEMANA label */}
-                    <div className="w-[20%] p-4 border-r border-black flex items-center justify-center font-bold text-center text-lg leading-tight">
-                        TOTAL SEMANA
-                    </div>
-                    
-                    {/* Middle: Big Sum Number */}
-                    <div className="w-[25%] p-4 border-r border-black flex items-center justify-center text-6xl font-black text-black">
-                        {weeklyTotal}
-                    </div>
-
-                    {/* Right: Carriers List */}
-                    <div className="flex-1 p-3 flex flex-col justify-center space-y-1">
-                        {Object.entries(carrierCounts).sort(([, a], [, b]) => b - a).map(([c, n]) => (
-                            <div key={c} className="flex items-center justify-between text-xs font-bold px-2">
-                                <span className="uppercase truncate pr-4">{c}</span>
-                                <div className="flex items-center gap-4 min-w-[100px] justify-end">
-                                    <span className="w-10 text-right">{n}</span>
-                                    {/* Fix: Explicitly cast operands to number for arithmetic operations to avoid TS errors. */}
-                                    <span className="w-12 text-right border-l border-black pl-2">{((Number(n) / Number(weeklyTotal)) * 100).toFixed(0)}%</span>
-                                </div>
+                {/* Middle: Daily breakdown */}
+                <div className="md:col-span-5 flex items-center justify-between px-2 md:px-4 md:border-r border-gray-100">
+                    {week.map((day, idx) => {
+                        const dailyTotal = day.entries.reduce((sum, e) => Number(sum) + (Number(e.quantity) || 1), 0);
+                        const dayName = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'][idx];
+                        return (
+                            <div key={idx} className="flex flex-col items-center">
+                                <span className="text-[10px] text-gray-400 font-bold uppercase mb-2">{dayName}</span>
+                                <span className={`w-8 h-8 flex items-center justify-center rounded-full text-sm font-bold ${dailyTotal > 0 ? 'bg-blue-50 text-byd-blue' : 'text-gray-300'}`}>
+                                    {dailyTotal}
+                                </span>
                             </div>
-                        ))}
-                    </div>
+                        );
+                    })}
+                </div>
+                
+                {/* Right: Carriers */}
+                <div className="md:col-span-4 flex flex-col justify-center gap-2 pl-0 md:pl-4">
+                    {Object.entries(carrierCounts).sort(([, a], [, b]) => (b as number) - (a as number)).slice(0, 4).map(([c, n]) => (
+                        <div key={c} className="flex items-center justify-between text-xs">
+                            <span className="font-semibold text-gray-600 uppercase truncate pr-2 w-24">{c}</span>
+                            <div className="flex items-center gap-3 flex-1">
+                                <div className="flex-1 bg-gray-100 rounded-full h-1.5 overflow-hidden">
+                                     <div className="bg-byd-blue h-full rounded-full" style={{ width: `${(Number(n)/Number(weeklyTotal))*100}%` }}></div>
+                                </div>
+                                <span className="w-8 text-right font-bold text-gray-800">{n}</span>
+                            </div>
+                        </div>
+                    ))}
+                    {Object.keys(carrierCounts).length > 4 && (
+                        <span className="text-[10px] text-gray-400 font-medium text-right mt-1">+ {Object.keys(carrierCounts).length - 4} outros</span>
+                    )}
                 </div>
             </div>
         );
     };
 
     const DayCell: React.FC<{ day: { date: Date | null, entries: LogisticsEntry[] }, heightClass: string }> = ({ day, heightClass }) => {
-        if (!day.date) return <div className={`border border-gray-300 bg-gray-50 ${heightClass}`}></div>;
+        if (!day.date) return <div className={`bg-gray-50/30 border-r border-b border-gray-100 last:border-r-0 ${heightClass}`}></div>;
         
         const groupedData = useMemo(() => groupEntriesByBL(day.entries), [day.entries]);
+        const dayTotal = groupedData.reduce((sum, g) => sum + g.summedQty, 0);
 
         return (
-            <div className={`border border-gray-400 flex flex-col ${heightClass} bg-white overflow-hidden`}>
-                {/* Day Header - Peach background as per screenshot */}
-                <div className="bg-[#f8cbad] text-center font-bold text-[10px] p-0.5 border-b border-black flex justify-between items-center px-1">
-                    <span className="flex-grow">{day.date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', timeZone: 'UTC' }).replace('.', '')}</span>
-                    <button onClick={() => setMaximizedDay(day)} className="p-0.5 rounded-full hover:bg-orange-300"><ExpandIcon /></button>
+            <div className={`border-r border-b border-gray-200 last:border-r-0 flex flex-col ${heightClass} bg-white overflow-hidden group hover:bg-gray-50/50 transition-colors`}>
+                {/* Day Header */}
+                <div className="p-3 flex justify-between items-center">
+                    <div className="flex items-center gap-2">
+                        <span className={`text-lg font-bold ${dayTotal > 0 ? 'text-gray-900' : 'text-gray-400'}`}>
+                            {day.date.getDate()}
+                        </span>
+                        {dayTotal > 0 && (
+                            <span className="bg-blue-100 text-byd-blue text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                {dayTotal} un
+                            </span>
+                        )}
+                    </div>
+                    {groupedData.length > 0 && (
+                        <button 
+                            onClick={() => setMaximizedDay(day)} 
+                            className="p-1.5 rounded-md opacity-0 group-hover:opacity-100 transition-all hover:bg-gray-200 text-gray-500 hover:text-gray-900"
+                            title="Expandir dia"
+                        >
+                            <ExpandIcon />
+                        </button>
+                    )}
                 </div>
                 
-                {/* Excel Style Data Grid - High Density */}
-                <div className="flex-grow overflow-y-auto text-[8px] leading-[1.1] font-sans">
-                    <table className="w-full border-collapse">
-                        <thead className="sticky top-0 bg-white border-b border-black text-center font-bold uppercase">
-                            <tr className="bg-gray-200">
-                                <th className="border-r border-black w-[18%] px-0.5">HBL</th>
-                                <th className="border-r border-black w-[10%] px-0.5">LOT</th>
-                                <th className="border-r border-black w-[12%] px-0.5">B.W.</th>
-                                <th className="border-r border-black w-[15%] px-0.5">VESSEL</th>
-                                <th className="border-r border-black w-[10%] px-0.5">FT</th>
-                                <th className="border-r border-black w-[8%] px-0.5">QTY</th>
-                                <th className="border-r border-black w-[12%] px-0.5">REL.</th>
-                                <th className="px-0.5">TRK</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {groupedData.map((group, idx) => (
-                                <tr key={idx} className={`border-b border-gray-300 h-[14px] ${group.isGroupDelivered ? 'bg-green-100' : ''}`}>
-                                    <td className="px-0.5 border-r border-gray-300 truncate font-semibold">{group.bl}</td>
-                                    <td className="px-0.5 border-r border-gray-300 text-center truncate">{group.batch}</td>
-                                    <td className="px-0.5 border-r border-gray-300 truncate">{group.bondedWarehouse?.slice(0, 5)}</td>
-                                    <td className="px-0.5 border-r border-gray-300 truncate uppercase">{group.arrivalVessel?.slice(0, 8)}</td>
-                                    <td className="px-0.5 border-r border-gray-300 text-center whitespace-nowrap">
-                                        {group.deadlineReturnCntr ? group.deadlineReturnCntr.split('-')[2] + '/' + group.deadlineReturnCntr.split('-')[1].slice(0,3) : ''}
-                                    </td>
-                                    <td className="px-0.5 border-r border-gray-300 text-center font-black">{group.summedQty}</td>
-                                    <td className="px-0.5 border-r border-gray-300 text-center truncate">{group.dsa || 'NO'}</td>
-                                    <td className="px-0.5 truncate uppercase">{group.carrier?.slice(0, 5)}</td>
-                                </tr>
-                            ))}
-                            {/* Empty rows to maintain Excel structure look */}
-                            {/* Fix: Explicitly cast operands to number for arithmetic operations to avoid TS errors on line 172. */}
-                            {Array.from({ length: Math.max(0, 15 - Number(groupedData.length)) }).map((_, i) => (
-                                <tr key={`empty-${i}`} className="border-b border-gray-100 h-[13px] bg-white">
-                                    <td className="border-r border-gray-100"></td><td className="border-r border-gray-100"></td><td className="border-r border-gray-100"></td><td className="border-r border-gray-100"></td><td className="border-r border-gray-100"></td><td className="border-r border-gray-100"></td><td className="border-r border-gray-100"></td><td></td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                {/* Minimalist Cards Data */}
+                <div className="flex-grow overflow-y-auto px-2 pb-2 space-y-1.5 scrollbar-thin scrollbar-thumb-gray-200">
+                    {groupedData.slice(0, 5).map((group, idx) => (
+                        <div key={idx} className={`p-2 rounded-lg border text-xs shadow-sm flex flex-col gap-1 transition-all hover:shadow-md ${group.isGroupDelivered ? 'bg-green-50 border-green-200' : 'bg-white border-gray-200'}`}>
+                            <div className="flex justify-between items-start gap-2">
+                                <span className={`font-semibold truncate ${group.isGroupDelivered ? 'text-green-900' : 'text-gray-800'}`} title={group.bl}>{group.bl}</span>
+                                <span className={`font-black shrink-0 ${group.isGroupDelivered ? 'text-green-700' : 'text-byd-blue'}`}>{group.summedQty}</span>
+                            </div>
+                            <div className="flex justify-between items-center mt-0.5">
+                                <span className="text-[10px] font-medium uppercase text-gray-500 truncate pr-2">
+                                    {group.carrier || 'N/A'} • <span className="text-gray-400 font-normal">{group.arrivalVessel?.slice(0,10)}</span>
+                                </span>
+                                {group.deadlineReturnCntr && (
+                                    <span className="text-[9px] text-gray-400 whitespace-nowrap bg-gray-100 px-1.5 py-0.5 rounded">
+                                        FT {group.deadlineReturnCntr.split('-')[2]}/{group.deadlineReturnCntr.split('-')[1].slice(0,3)}
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                    {groupedData.length > 5 && (
+                        <div className="text-center py-2 text-xs font-semibold text-gray-400 bg-gray-50 rounded-lg border border-gray-100 border-dashed cursor-pointer hover:bg-gray-100" onClick={() => setMaximizedDay(day)}>
+                            + {groupedData.length - 5} outras entregas
+                        </div>
+                    )}
                 </div>
             </div>
         );
     };
 
-    // Adjusted heights for desktop view to avoid too much vertical empty space while showing rows
-    const heightClass = selectedWeekIndex !== null ? "h-[500px]" : "h-[320px]";
-    const getWeekStartDate = (week: {date: Date | null}[]) => week.find(d => d.date)?.date?.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', timeZone: 'UTC' }) ?? '';
+    const heightClass = selectedWeekIndex !== null ? "h-[500px]" : "h-[180px] lg:h-[220px]";
 
     return (
-        <div className="flex flex-col gap-4">
-            <div className="bg-white p-4 rounded-lg shadow-lg relative border border-gray-300 min-w-[1200px]">
-                {isLoading && <div className="absolute inset-0 bg-white/70 flex items-center justify-center z-10"><Loader2Icon /></div>}
+        <div className="flex flex-col gap-6 max-w-full pb-10">
+            <div className="w-full relative">
+                {isLoading && <div className="absolute inset-0 bg-white/70 backdrop-blur-sm flex items-center justify-center z-10 rounded-2xl"><Loader2Icon /></div>}
                 
-                <div className="flex justify-between items-center mb-4 px-2">
-                    <div className="flex items-center gap-6">
-                        <button onClick={goToPreviousMonth} className="p-2 rounded-full hover:bg-gray-100 border transition-colors"><ChevronLeftIcon /></button>
-                        <h2 className="text-2xl font-black text-gray-900 uppercase tracking-tighter">
-                            {selectedWeekIndex !== null && weeks[selectedWeekIndex] ? `Semana de ${getWeekStartDate(weeks[selectedWeekIndex])}` : `${monthName} ${year}`}
+                <div className="flex flex-col md:flex-row md:justify-between items-start md:items-center mb-6 gap-4">
+                    <div className="flex items-center gap-4 bg-white px-4 py-2 rounded-2xl border border-gray-200 shadow-sm">
+                        <button onClick={goToPreviousMonth} className="p-2 rounded-full hover:bg-gray-100 text-gray-600 transition-colors group"><div className="group-hover:-translate-x-0.5 transition-transform"><ChevronLeftIcon /></div></button>
+                        <h2 className="text-xl md:text-2xl font-black text-gray-900 uppercase tracking-tighter w-48 text-center truncate">
+                            {monthName} {year}
                         </h2>
-                        <button onClick={goToNextMonth} className="p-2 rounded-full hover:bg-gray-100 border transition-colors"><ChevronRightIcon /></button>
+                        <button onClick={goToNextMonth} className="p-2 rounded-full hover:bg-gray-100 text-gray-600 transition-colors group"><div className="group-hover:translate-x-0.5 transition-transform"><ChevronRightIcon /></div></button>
                     </div>
                     {selectedWeekIndex !== null && (
-                        <button onClick={() => setSelectedWeekIndex(null)} className="px-6 py-2 bg-byd-blue text-white font-black rounded shadow-lg hover:scale-105 transition-transform uppercase text-sm">
-                            Voltar visão mensal
+                        <button onClick={() => setSelectedWeekIndex(null)} className="px-6 py-2.5 bg-byd-blue text-white font-bold rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all uppercase text-sm flex items-center gap-2">
+                             Voltar visão mensal
                         </button>
                     )}
                 </div>
 
-                <div className="w-full">
-                    {selectedWeekIndex === null ? (
-                        weeks.map((week, index) => (
-                            <div key={index} className="mb-6 last:mb-0">
-                                <div className="grid grid-cols-7 border-l border-t border-black">
-                                    {week.map((day, dayIndex) => (
-                                        <DayCell key={dayIndex} day={day} heightClass={heightClass}/>
-                                    ))}
-                                </div>
-                                <WeeklySummary week={week} onClick={() => setSelectedWeekIndex(index)} isClickable={true} />
+                <div className="w-full bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                    {/* Weekdays Header */}
+                    <div className="grid grid-cols-7 bg-gray-50 border-b border-gray-200">
+                        {['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'].map(d => (
+                            <div key={d} className="py-4 text-center text-xs font-bold text-gray-500 uppercase tracking-widest border-r border-gray-100 last:border-r-0">
+                                {d}
                             </div>
-                        ))
+                        ))}
+                    </div>
+
+                    {selectedWeekIndex === null ? (
+                        <div className="flex flex-col">
+                            {weeks.map((week, index) => (
+                                <div key={index} className="flex flex-col border-b border-gray-200 last:border-b-0">
+                                    <div className="grid grid-cols-7">
+                                        {week.map((day, dayIndex) => (
+                                            <DayCell key={dayIndex} day={day} heightClass={heightClass}/>
+                                        ))}
+                                    </div>
+                                    <div className="px-4 pb-4 bg-gray-50/30">
+                                        <WeeklySummary week={week} onClick={() => setSelectedWeekIndex(index)} isClickable={true} />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     ) : (
                         weeks[selectedWeekIndex] && (
-                            <div>
-                                <div className="grid grid-cols-7 border-l border-t border-black">
+                            <div className="flex flex-col">
+                                <div className="grid grid-cols-7">
                                     {weeks[selectedWeekIndex].map((day, dayIndex) => (
-                                        <DayCell key={dayIndex} day={day} heightClass={heightClass}/>
+                                        <DayCell key={dayIndex} day={day} heightClass="h-[70vh]"/>
                                     ))}
                                 </div>
-                                <WeeklySummary week={weeks[selectedWeekIndex]} onClick={() => {}} isClickable={false} />
+                                <div className="p-6 bg-gray-50/50 border-t border-gray-200">
+                                    <WeeklySummary week={weeks[selectedWeekIndex]} onClick={() => {}} isClickable={false} />
+                                </div>
                             </div>
                         )
                     )}
@@ -297,3 +321,4 @@ const CalendarPage: React.FC<CalendarPageProps> = ({ entries, isLoading, onMonth
 };
 
 export default CalendarPage;
+
