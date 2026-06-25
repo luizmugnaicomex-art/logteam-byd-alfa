@@ -26,8 +26,7 @@ const LogisticsListPage: React.FC<LogisticsListPageProps> = ({ entries, isLoadin
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
     useEffect(() => {
-        // Server-side filtering is triggered from App.tsx, so we just pass up the new filter state.
-        // We debounce this to avoid rapid-fire requests as the user types or selects.
+        // Server-side filtering with debounce to avoid rapid-fire requests
         const handler = setTimeout(() => {
             onFilterChange({ 
                 containerSearch: filters.containerSearch,
@@ -59,6 +58,7 @@ const LogisticsListPage: React.FC<LogisticsListPageProps> = ({ entries, isLoadin
     const handleStartEditing = (entry: LogisticsEntry) => setEditingRow({ ...entry });
     const handleCancelEditing = () => setEditingRow(null);
     const handleSaveEditing = () => { if (editingRow) { onUpdate(editingRow as LogisticsEntry); setEditingRow(null); } };
+    
     const handleEditingChange = (e: React.ChangeEvent<HTMLInputElement>) => { 
         if (editingRow) {
             const { name, value, type } = e.target;
@@ -67,6 +67,12 @@ const LogisticsListPage: React.FC<LogisticsListPageProps> = ({ entries, isLoadin
         }
     };
 
+    // Helper to extract clean YYYY-MM-DD for standard HTML Date Input value
+    const formatToInputDate = (dateVal: any) => {
+        if (!dateVal) return '';
+        const d = new Date(dateVal);
+        return isNaN(d.getTime()) ? '' : d.toISOString().split('T')[0];
+    };
 
     return (
         <div className="bg-white rounded-lg shadow-md">
@@ -106,6 +112,8 @@ const LogisticsListPage: React.FC<LogisticsListPageProps> = ({ entries, isLoadin
                     <tbody>
                         {isLoading ? (
                             <tr><td colSpan={18} className="text-center p-8"><Loader2Icon /></td></tr>
+                        ) : entries.length === 0 ? (
+                            <tr><td colSpan={18} className="text-center p-8 text-gray-500">No entries found.</td></tr>
                         ) : entries.map(entry => {
                             const isEditing = editingRow?.id === entry.id;
                             const commonInputClass = "p-1 border rounded-md text-sm w-full";
@@ -122,10 +130,11 @@ const LogisticsListPage: React.FC<LogisticsListPageProps> = ({ entries, isLoadin
                                     <td className="px-4 py-2">{isEditing ? <input type="text" name="carrier" value={editingRow?.carrier || ''} onChange={handleEditingChange} className={commonInputClass} autoFocus /> : entry.carrier}</td>
                                     <td className="px-4 py-2 whitespace-nowrap">{toDisplayDate(entry.ata)}</td>
                                     <td className="px-4 py-2 text-center">{entry.freeTime ?? 'N/A'}</td>
-                                    <td className="px-4 py-2 whitespace-nowrap font-semibold text-red-600">{toDisplayDate(entry.deadlineReturnCntr)}</td>
-                                    <td className="px-4 py-2 whitespace-nowrap font-semibold text-blue-700">{isEditing ? <input type="date" name="estimatedDeliveryDate" value={editingRow?.estimatedDeliveryDate || ''} onChange={handleEditingChange} className={commonInputClass} /> : toDisplayDate(entry.estimatedDeliveryDate)}</td>
-                                    <td className="px-4 py-2 whitespace-nowrap">{isEditing ? <input type="date" name="deliveryDateAtByd" value={editingRow?.deliveryDateAtByd || ''} onChange={handleEditingChange} className={commonInputClass} /> : toDisplayDate(entry.deliveryDateAtByd)}</td>
-                                    <td className="px-4 py-2 whitespace-nowrap">{isEditing ? <input type="date" name="actualDepotReturnDate" value={editingRow?.actualDepotReturnDate || ''} onChange={handleEditingChange} className={commonInputClass} /> : toDisplayDate(entry.actualDepotReturnDate)}</td>
+                                    {/* Swapped out key structure to match desembaracoDeadlineReturnCntr schema value */}
+                                    <td className="px-4 py-2 whitespace-nowrap font-semibold text-red-600">{toDisplayDate(entry.desembaracoDeadlineReturnCntr)}</td>
+                                    <td className="px-4 py-2 whitespace-nowrap font-semibold text-blue-700">{isEditing ? <input type="date" name="estimatedDeliveryDate" value={formatToInputDate(editingRow?.estimatedDeliveryDate)} onChange={handleEditingChange} className={commonInputClass} /> : toDisplayDate(entry.estimatedDeliveryDate)}</td>
+                                    <td className="px-4 py-2 whitespace-nowrap">{isEditing ? <input type="date" name="deliveryDateAtByd" value={formatToInputDate(editingRow?.deliveryDateAtByd)} onChange={handleEditingChange} className={commonInputClass} /> : toDisplayDate(entry.deliveryDateAtByd)}</td>
+                                    <td className="px-4 py-2 whitespace-nowrap">{isEditing ? <input type="date" name="actualDepotReturnDate" value={formatToInputDate(editingRow?.actualDepotReturnDate)} onChange={handleEditingChange} className={commonInputClass} /> : toDisplayDate(entry.actualDepotReturnDate)}</td>
                                     <td className="px-4 py-2"><span className={`px-2 py-1 text-xs font-semibold rounded-full ${getComexStatusPillClass(entry.statusComex)}`}>{entry.statusComex}</span></td>
                                     <td className="px-4 py-2"><span className={`px-2 py-1 text-xs font-semibold rounded-full ${getWarehouseStatusPillClass(entry.statusCntrWarehouse)}`}>{entry.statusCntrWarehouse || 'N/A'}</span></td>
                                     <td className="px-4 py-2 flex items-center gap-2">
@@ -137,7 +146,6 @@ const LogisticsListPage: React.FC<LogisticsListPageProps> = ({ entries, isLoadin
                         })}
                     </tbody>
                 </table>
-                 {entries.length === 0 && !isLoading && <tr><td colSpan={18} className="text-center p-8 text-gray-500">No entries found.</td></tr>}
             </div>
             <div className="p-4 flex justify-between items-center">
                 <span className="text-sm text-gray-600">Page {page}</span>
