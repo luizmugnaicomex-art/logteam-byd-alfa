@@ -3,6 +3,7 @@
 import React from 'react';
 import { User } from '../types';
 import { DashboardIcon, ImportsIcon, ReportIcon, UserIcon, LogoutIcon, DeliveryTruckIcon, CalendarIcon, TeamIcon, AdminIcon, ChartBarIcon, WandIcon } from './common/Icons';
+import { useLanguage } from '../context/LanguageContext';
 
 interface SidebarProps {
     onNavigate: (view: string) => void;
@@ -12,21 +13,23 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ onNavigate, activeView, onLogout, loggedInUser }) => {
+    const { language, setLanguage, t } = useLanguage();
+
     const navItems = [
-        { label: 'Dashboard', icon: <DashboardIcon />, view: 'dashboard' },
-        { label: 'Logistics', icon: <ImportsIcon />, view: 'logistics' },
-        { label: 'Painel de Entregas', icon: <DeliveryTruckIcon />, view: 'deliverypanel' },
-        { label: 'Calendario', icon: <CalendarIcon />, view: 'calendario' },
-        { label: 'FUP Report', icon: <ReportIcon />, view: 'fupreport' },
+        { label: t('dashboard'), icon: <DashboardIcon />, view: 'dashboard' },
+        { label: t('logistics'), icon: <ImportsIcon />, view: 'logistics' },
+        { label: t('deliveryPanel'), icon: <DeliveryTruckIcon />, view: 'deliverypanel' },
+        { label: t('calendar'), icon: <CalendarIcon />, view: 'calendario' },
+        { label: t('fupReport'), icon: <ReportIcon />, view: 'fupreport' },
     ];
     
     const toolNavItems = [
-        { label: 'Vessel Updates', icon: <WandIcon />, view: 'vesselupdates' },
+        { label: t('vesselUpdates'), icon: <WandIcon />, view: 'vesselupdates' },
     ];
 
     const adminNavItems = [
-        { label: 'Team', icon: <TeamIcon />, view: 'team' },
-        { label: 'Admin', icon: <AdminIcon />, view: 'admin' },
+        { label: t('team'), icon: <TeamIcon />, view: 'team' },
+        { label: t('admin'), icon: <AdminIcon />, view: 'admin' },
     ];
 
     const isActive = (view: string) => activeView.startsWith(view);
@@ -48,7 +51,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onNavigate, activeView, onLogout, log
     );
 
     return (
-        <aside className="bg-navy-dark text-gray-300 w-64 flex flex-col fixed inset-y-0 left-0 z-30">
+        <aside className="bg-navy-dark text-gray-300 w-64 flex flex-col h-full flex-shrink-0 z-30">
             <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
                 <div className="flex items-center flex-shrink-0 px-4">
                     <h1 className="text-2xl font-bold text-white">BYD Navigator</h1>
@@ -71,6 +74,22 @@ const Sidebar: React.FC<SidebarProps> = ({ onNavigate, activeView, onLogout, log
                     )}
                 </nav>
             </div>
+            
+            <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 bg-navy-dark border-t border-navy-light">
+                <span className="text-xs text-gray-400 uppercase tracking-wider">{t('language')}</span>
+                <div className="flex space-x-1">
+                    {(['PT', 'EN', 'CN'] as const).map(lang => (
+                        <button
+                            key={lang}
+                            onClick={() => setLanguage(lang)}
+                            className={`px-2 py-1 text-xs font-medium rounded-md transition-colors ${language === lang ? 'bg-byd-blue text-white' : 'bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700'}`}
+                        >
+                            {lang}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
             <div className="flex-shrink-0 flex border-t border-navy-light p-4">
                 <div className="flex-shrink-0 w-full group block">
                     <div className="flex items-center">
@@ -81,7 +100,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onNavigate, activeView, onLogout, log
                             <p className="text-sm font-medium text-white">{loggedInUser?.name}</p>
                             <p className="text-xs font-medium text-gray-400">{loggedInUser?.role}</p>
                         </div>
-                        <button onClick={onLogout} className="ml-auto text-gray-400 hover:text-white transition-colors" title="Logout">
+                        <button onClick={onLogout} className="ml-auto text-gray-400 hover:text-white transition-colors" title={t('logout')}>
                            <LogoutIcon />
                         </button>
                     </div>
