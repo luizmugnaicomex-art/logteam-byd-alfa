@@ -18,17 +18,17 @@ const orderedLogisticsColumns: { header: string, key: keyof LogisticsEntry }[] =
     { header: 'FREIGHT FORWARDER', key: 'freightForwarder' }, { header: 'SHIPOWNER', key: 'shipowner' },
     { header: 'BONDED WAREHOUSE', key: 'bondedWarehouse' }, { header: 'RESPONSIBLE ANALYST', key: 'responsibleAnalyst' },
     { header: 'PO SAP', key: 'poSap' }, { header: 'BATCH', key: 'batch' }, { header: 'COMPONENT', key: 'component' },
-    { header: 'LOADING TYPE', key: 'loadingType' }, { header: 'DESCRIPTION', key: 'description' },
+    { header: 'LOADING TYPE', key: 'component' }, { header: 'DESCRIPTION', key: 'description' },
     { header: 'TYPE OF CARGO', key: 'typeOfCargo' }, { header: 'COST CENTER', key: 'costCenter' },
-    { header: 'COMEX SPONSOR', key: 'comexSponsor' }, { header: 'DSA', key: 'dsa' }, { header: 'ARRIVAL VESSEL', key: 'arrivalVessel' },
+    { header: 'COMEX SPONSOR', key: 'comexSponsor' }, { header: 'DSA', key: 'deadlinePickUpDsa' }, { header: 'ARRIVAL VESSEL', key: 'arrivalVessel' },
     { header: 'ATA', key: 'ata' }, { header: 'FREE TIME', key: 'freeTime' }, { header: 'DI', key: 'di' },
     { header: 'PARAMETRIZATION', key: 'parametrization' }, { header: 'CHANNEL DATE', key: 'channelDate' },
     { header: 'VALUE PER CNTR', key: 'valuePerCntr' }, { header: 'NOTA FISCAL', key: 'notaFiscal' },
     { header: 'DATE NOTA FISCAL', key: 'dateNotaFiscal' }, { header: 'CARGO READY (DATE)', key: 'cargoReadyDate' },
     { header: 'STATUS (COMEX)', key: 'statusComex' }, { header: 'INCOTERM', key: 'incoterm' },
-    { header: 'DEADLINE PICK UP - DSA', key: 'deadlinePickUpDsa' }, { header: 'CNTR / BBK / AIR', key: 'cntrBbkAir' },
+    { header: 'DEADLINE PICK UP - DSA', key: 'deadlinePickUpDsa' }, { header: 'CNTR / BBK / AIR', key: 'originalCntrModel' },
     { header: 'ORIGINAL CNTR MODEL', key: 'originalCntrModel' }, { header: 'CNTRS RENT', key: 'cntrsRent' },
-    { header: '(DESEMBARAÇO) DEADLINE RETURN CNTR', key: 'deadlineReturnCntr' }, { header: 'STATUS CNTR WAREHOUSE', key: 'statusCntrWarehouse' },
+    { header: '(DESEMBARAÇO) DEADLINE RETURN CNTR', key: 'desembaracoDeadlineReturnCntr' }, { header: 'STATUS CNTR WAREHOUSE', key: 'statusCntrWarehouse' },
     { header: 'UNLOAD DATE', key: 'unloadDate' }, { header: 'CARRIER', key: 'carrier' }, { header: 'TMS DESPATCH NO', key: 'tmsDespatchNo' },
     { header: 'TYPE OF TRUCK', key: 'typeOfTruck' }, { header: 'ESTIMATED DELIVERY DATE', key: 'estimatedDeliveryDate' },
     { header: 'ON-SITE PLACE OF DELIVERY', key: 'onSitePlaceOfDelivery' }, { header: 'DELIVERY DATE AT BYD', key: 'deliveryDateAtByd' },
@@ -94,6 +94,8 @@ const FUPReportPage: React.FC<FUPReportPageProps> = ({ entries, isLoading, onFil
                     <tbody className="divide-y">
                         {isLoading ? (
                              <tr><td colSpan={orderedLogisticsColumns.length} className="text-center p-8"><Loader2Icon /></td></tr>
+                        ) : entries.length === 0 ? (
+                             <tr><td colSpan={orderedLogisticsColumns.length} className="text-center p-8 text-gray-500">No entries found.</td></tr>
                         ) : entries.map(entry => (
                             <tr key={entry.id} className="bg-white hover:bg-gray-50">
                                 {orderedLogisticsColumns.map(col => {
@@ -107,7 +109,6 @@ const FUPReportPage: React.FC<FUPReportPageProps> = ({ entries, isLoading, onFil
                         ))}
                     </tbody>
                 </table>
-                 {entries.length === 0 && !isLoading && <tr><td colSpan={orderedLogisticsColumns.length} className="text-center p-8 text-gray-500">No entries found.</td></tr>}
             </div>
              <div className="p-4 flex justify-between items-center border-t">
                 <span className="text-sm text-gray-600">Page {page}</span>
